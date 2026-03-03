@@ -52,34 +52,41 @@ const Dashboard = ({ user, onLogout }) => {
 
     // 3. Carga de Datos desde Firebase por Fecha
     useEffect(() => {
+        let isMounted = true;
         const loadDayData = async () => {
             setIsDataLoaded(false);
             try {
                 const docRef = doc(db, 'users', user.uid, 'history', currentDate);
                 const docSnap = await getDoc(docRef);
 
-                if (docSnap.exists()) {
-                    setActiveSupps(docSnap.data().supps);
-                } else {
-                    setActiveSupps(DEFAULT_SUPPS);
+                if (isMounted) {
+                    if (docSnap.exists() && docSnap.data().supps) {
+                        setActiveSupps(docSnap.data().supps);
+                    } else {
+                        setActiveSupps(DEFAULT_SUPPS);
+                    }
+                    // Utilizamos un pequeño timeout para asegurar que el re-render de activeSupps
+                    // aplique antes de habilitar el auto-guardado
+                    setTimeout(() => setIsDataLoaded(true), 100);
                 }
             } catch (error) {
                 console.error("Error cargando historial de Firebase:", error);
-            } finally {
-                setIsDataLoaded(true);
+                if (isMounted) setIsDataLoaded(true);
             }
         };
 
         if (user && user.uid) {
             loadDayData();
         }
+
+        return () => { isMounted = false; };
     }, [currentDate, user.uid]);
 
     // 4. Guardado de Datos en Firebase (Auto-Save)
+    // Se ejecuta cada vez que activeSupps cambia, PERO solo si isDataLoaded es true.
     useEffect(() => {
         const saveDayData = async () => {
-            // Evitar guardar si apenas se está cargando para no sobreescribir con DEFAULT_SUPPS
-            if (!isDataLoaded) return;
+            if (!isDataLoaded) return; // No guardamos re-renders causados por la carga inicial
 
             try {
                 const docRef = doc(db, 'users', user.uid, 'history', currentDate);
@@ -89,8 +96,13 @@ const Dashboard = ({ user, onLogout }) => {
             }
         };
 
-        saveDayData();
-    }, [activeSupps, currentDate, isDataLoaded, user.uid]);
+        // Ponemos un pequeño debounce para evitar floods a Firebase si le da muchos clicks rápidos
+        const timeoutId = setTimeout(() => {
+            saveDayData();
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [activeSupps, isDataLoaded]); // Eliminamos currentDate y user.uid como dependencias fuertes para evitar guardados accidentales al cambiar de fecha
 
 
     const toggleSupp = (id) => {
@@ -228,8 +240,7 @@ const Dashboard = ({ user, onLogout }) => {
             <div className={`p-2 rounded-2xl border transition-all flex flex-col gap-2 ${themes[colorTheme]}`}>
                 <button
                     onClick={() => toggleSupp(id)}
-                    className="flex-1 w-full flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-wider disabled:opacity-50"
-                    disabled={!isDataLoaded}
+                    className="flex-1 w-full flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-wider transition-opacity"
                 >
                     {Icon && <Icon size={14} className={isActive && id === 'flowState' ? "animate-bounce" : ""} />}
                     {label}
@@ -242,8 +253,7 @@ const Dashboard = ({ user, onLogout }) => {
                             type="time"
                             value={formatTimeForInput(timeValue)}
                             onChange={(e) => updateSuppTime(id, e.target.value)}
-                            disabled={!isDataLoaded}
-                            className="bg-transparent text-[10px] font-mono text-center w-16 outline-none text-white focus:ring-1 focus:ring-indigo-500 rounded p-0.5 cursor-pointer disabled:opacity-50"
+                            className="bg-transparent text-[10px] font-mono text-center w-16 outline-none text-white focus:ring-1 focus:ring-indigo-500 rounded p-0.5 cursor-pointer"
                         />
                     </div>
                 )}
