@@ -234,33 +234,51 @@ const Dashboard = ({ user, onLogout }) => {
         const timeValue = activeSupps[id].time;
 
         const themes = {
-            white: isActive ? 'bg-white/10 border-white/20 text-white' : 'border-white/5 text-slate-700 bg-slate-800/20 hover:bg-slate-800/40',
-            indigo: isActive ? 'bg-indigo-500 border-indigo-400 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]' : 'bg-slate-800/40 border-white/5 text-slate-500 hover:bg-slate-800/60',
-            orange: isActive ? 'bg-orange-500/20 border-orange-400 text-orange-100' : 'border-white/5 text-slate-700 bg-slate-800/20 hover:bg-slate-800/40',
-            amber: isActive ? 'bg-amber-500/20 border-amber-500 text-amber-100' : 'bg-slate-800/20 border-white/5 text-slate-700 hover:bg-slate-800/40',
-            yellow: isActive ? 'bg-yellow-500/20 border-yellow-500 text-yellow-100' : 'border-white/5 text-slate-700 bg-slate-800/20 hover:bg-slate-800/40',
-            emerald: isActive ? 'bg-emerald-500 border-emerald-400 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-slate-800/40 border-white/5 text-slate-500 hover:bg-slate-800/60',
-            blue: isActive ? 'bg-blue-500/20 border-blue-400 text-blue-100' : 'border-white/5 text-slate-700 bg-slate-800/20 hover:bg-slate-800/40'
+            white: isActive ? 'bg-white/10 border-white/30 text-white shadow-[0_0_20px_rgba(255,255,255,0.05)]' : 'border-white/5 text-slate-500 bg-slate-900/40 hover:bg-slate-800/80 hover:border-white/10 hover:-translate-y-0.5',
+            indigo: isActive ? 'bg-indigo-500/10 border-indigo-500/40 text-indigo-200 shadow-[0_0_15px_rgba(99,102,241,0.15)]' : 'bg-slate-900/40 border-white/5 text-slate-500 hover:bg-slate-800/80 hover:border-indigo-500/30 hover:-translate-y-0.5',
+            orange: isActive ? 'bg-orange-500/10 border-orange-500/40 text-orange-200 shadow-[0_0_15px_rgba(249,115,22,0.15)]' : 'bg-slate-900/40 border-white/5 text-slate-500 hover:bg-slate-800/80 hover:border-orange-500/30 hover:-translate-y-0.5',
+            amber: isActive ? 'bg-amber-500/10 border-amber-500/40 text-amber-200 shadow-[0_0_15px_rgba(245,158,11,0.15)]' : 'bg-slate-900/40 border-white/5 text-slate-500 hover:bg-slate-800/80 hover:border-amber-500/30 hover:-translate-y-0.5',
+            yellow: isActive ? 'bg-yellow-500/10 border-yellow-500/40 text-yellow-200 shadow-[0_0_15px_rgba(234,179,8,0.15)]' : 'bg-slate-900/40 border-white/5 text-slate-500 hover:bg-slate-800/80 hover:border-yellow-500/30 hover:-translate-y-0.5',
+            emerald: isActive ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-200 shadow-[0_0_15px_rgba(16,185,129,0.15)]' : 'bg-slate-900/40 border-white/5 text-slate-500 hover:bg-slate-800/80 hover:border-emerald-500/30 hover:-translate-y-0.5',
+            blue: isActive ? 'bg-blue-500/10 border-blue-500/40 text-blue-200 shadow-[0_0_15px_rgba(59,130,246,0.15)]' : 'bg-slate-900/40 border-white/5 text-slate-500 hover:bg-slate-800/80 hover:border-blue-500/30 hover:-translate-y-0.5'
+        };
+
+        const iconColors = {
+            white: isActive ? 'text-white' : 'text-slate-600',
+            indigo: isActive ? 'text-indigo-400' : 'text-slate-600',
+            orange: isActive ? 'text-orange-400' : 'text-slate-600',
+            amber: isActive ? 'text-amber-400' : 'text-slate-600',
+            yellow: isActive ? 'text-yellow-400' : 'text-slate-600',
+            emerald: isActive ? 'text-emerald-400' : 'text-slate-600',
+            blue: isActive ? 'text-blue-400' : 'text-slate-600'
         };
 
         return (
-            <div className={`p-2 rounded-2xl border transition-all flex flex-col gap-2 ${themes[colorTheme]}`}>
+            <div className={`relative group p-1.5 rounded-xl border backdrop-blur-md transition-all duration-300 flex flex-col overflow-hidden ${themes[colorTheme]}`}>
+                <div className={`absolute left-0 top-0 bottom-0 w-1 transition-all duration-500 ${isActive ? 'bg-current opacity-100 shadow-[0_0_10px_currentColor]' : 'bg-transparent opacity-0'}`} />
+
                 <button
                     onClick={() => toggleSupp(id)}
-                    className="flex-1 w-full flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-wider transition-opacity"
+                    className="flex items-center justify-start gap-1.5 w-full text-left"
                 >
-                    {Icon && <Icon size={14} className={isActive && id === 'flowState' ? "animate-bounce" : ""} />}
-                    {label}
+                    <div className={`p-1.5 rounded-lg bg-black/40 border border-white/5 transition-colors shrink-0 ${iconColors[colorTheme]}`}>
+                        {Icon ? <Icon size={12} className={isActive && id === 'flowState' ? "animate-pulse" : ""} /> : <Target size={12} />}
+                    </div>
+                    <div className="flex-1 min-w-0 pr-1">
+                        <p className={`text-[8.5px] sm:text-[9.5px] font-black uppercase tracking-widest truncate transition-colors leading-tight ${isActive ? 'text-white' : 'text-slate-400'}`}>
+                            {label}
+                        </p>
+                    </div>
                 </button>
 
                 {isActive && (
-                    <div className="flex items-center justify-center gap-1 mt-1 pt-2 border-t border-white/10">
-                        <Clock size={10} className="opacity-70" />
+                    <div className="mt-1.5 flex items-center justify-between px-2 py-1 rounded-md bg-black/40 border border-white/10 shadow-inner group-hover:bg-black/60 transition-colors w-full">
+                        <Clock size={10} className="text-current opacity-60 shrink-0" />
                         <input
                             type="time"
                             value={formatTimeForInput(timeValue)}
                             onChange={(e) => updateSuppTime(id, e.target.value)}
-                            className="bg-transparent text-[10px] font-mono text-center w-16 outline-none text-white focus:ring-1 focus:ring-indigo-500 rounded p-0.5 cursor-pointer"
+                            className="bg-transparent text-[10px] md:text-[11px] font-mono font-bold w-full outline-none text-current cursor-pointer text-right transition-colors hover:text-white"
                         />
                     </div>
                 )}
@@ -269,166 +287,169 @@ const Dashboard = ({ user, onLogout }) => {
     };
 
     return (
-        <div className="min-h-screen bg-[#050810] p-4 md:p-8 font-sans text-slate-200">
+        <div className="min-h-screen bg-[#030509] relative overflow-hidden font-sans text-slate-200">
+            {/* Ambient Blobs */}
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-orange-600/5 rounded-full blur-[150px] pointer-events-none" />
 
-            {/* Navbar de Usuario */}
-            <div className="max-w-7xl mx-auto mb-8 bg-slate-900/40 border border-white/5 rounded-[2rem] p-4 flex flex-col sm:flex-row justify-between items-center backdrop-blur-md gap-4">
-
-                {/* Info de Usuario */}
-                <div className="flex items-center gap-4 w-full sm:w-auto">
-                    <img src={user.photoURL} alt="Avatar" className="w-10 h-10 rounded-full border border-indigo-500/30" />
-                    <div>
-                        <p className="text-xs text-slate-400 font-medium">Bienvenido,</p>
-                        <p className="text-sm font-bold text-white">{user.displayName}</p>
-                    </div>
-                </div>
-
-                {/* Date Selector Central */}
-                <div className="flex items-center gap-3 bg-slate-800/50 p-1.5 rounded-2xl border border-white/10">
-                    <button onClick={() => changeDate(-1)} className="p-2 hover:bg-white/10 rounded-xl transition-all text-slate-400 hover:text-white">
-                        <ChevronLeft size={16} />
-                    </button>
-
-                    <div className="flex flex-col items-center min-w-[120px]">
-                        <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest flex items-center gap-1 mb-0.5">
-                            <Calendar size={10} /> Historial
-                        </span>
-                        <span className="text-sm font-bold text-white capitalize">{formatDisplayDate(currentDate)}</span>
-                    </div>
-
-                    <button
-                        onClick={() => changeDate(1)}
-                        className="p-2 hover:bg-white/10 rounded-xl transition-all text-slate-400 hover:text-white"
-                    >
-                        <ChevronRight size={16} />
-                    </button>
-                </div>
-
-                {/* Botonera Derecha */}
-                <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                    <button
-                        onClick={() => setShowRecomendador(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600/20 to-emerald-600/20 hover:from-indigo-600/40 hover:to-emerald-600/40 border border-indigo-500/30 rounded-xl text-xs font-bold text-indigo-300 transition-all"
-                    >
-                        <Brain size={14} /> Asistente
-                    </button>
-                    <button onClick={onLogout} className="p-2 hover:bg-red-500/10 text-slate-400 hover:text-red-400 rounded-xl transition-all">
-                        <LogOut size={16} />
-                    </button>
-                </div>
-            </div>
-
-            <div className={`max-w-7xl mx-auto transition-opacity duration-500 ${!isDataLoaded ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-                {/* Header Consolidado */}
-                <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end mb-10 gap-8">
-                    <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-indigo-400 font-bold tracking-[0.2em] text-[10px] uppercase bg-indigo-400/10 px-3 py-1 rounded-full w-fit border border-indigo-400/20">
-                            <Shield size={12} /> Biological Logic Engine v9.0
+            <div className="relative z-10 p-4 sm:p-6 lg:p-8">
+                {/* Navbar de Usuario (Flotante) */}
+                <div className="max-w-7xl mx-auto mb-10 bg-slate-900/50 border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-full px-6 py-3 flex flex-col md:flex-row justify-between items-center backdrop-blur-xl gap-4 sticky top-4 z-50 transition-all hover:bg-slate-900/60">
+                    {/* Info de Usuario */}
+                    <div className="flex items-center gap-4 w-full md:w-auto">
+                        <div className="relative">
+                            <img src={user.photoURL} alt="Avatar" className="w-10 h-10 rounded-full border-2 border-indigo-500/50 shadow-lg object-cover" />
+                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-slate-900 rounded-full"></div>
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-none">
-                            Tu Perfil <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-indigo-400 to-emerald-400">Cognitivo</span>
-                        </h1>
-                        <p className="text-slate-500 text-xs mt-2 font-medium">
-                            Mostrando la arquitectura biológica para la fecha seleccionada.
-                        </p>
-                    </div>
-
-                    <div className="flex gap-4">
-                        <div className="bg-slate-800/30 backdrop-blur-xl p-5 rounded-[2.5rem] border border-white/5 text-center min-w-[120px] shadow-xl">
-                            <p className="text-[9px] text-slate-500 font-black uppercase mb-1 tracking-widest">Piso</p>
-                            <p className="text-3xl font-black text-white">{(activeSupps.creatina.active && activeSupps.magnesio.active) ? '45%' : '35%'}</p>
-                        </div>
-                        <div className="bg-emerald-600/10 backdrop-blur-xl p-5 rounded-[2.5rem] border border-emerald-500/20 text-center min-w-[120px] shadow-xl">
-                            <p className="text-[9px] text-emerald-400 font-black uppercase mb-1 tracking-widest">CI Peak</p>
-                            <p className="text-3xl font-black text-white">145</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-
-                    {/* Gráfica */}
-                    <div className="lg:col-span-8 bg-slate-900/30 backdrop-blur-md p-6 md:p-8 rounded-[3.5rem] border border-white/10 relative overflow-hidden group shadow-2xl">
-                        <div className="h-[450px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <ComposedChart data={data}>
-                                    <defs>
-                                        <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#6366f1" stopOpacity={0.5} />
-                                            <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" opacity={0.3} />
-                                    <XAxis dataKey="time" interval={3} stroke="#475569" fontSize={11} axisLine={false} tickLine={false} />
-                                    <YAxis domain={[0, 100]} hide />
-                                    <Tooltip content={<CustomTooltip />} />
-                                    <Area type="monotone" dataKey="optimized" stroke="#6366f1" strokeWidth={6} fillOpacity={1} fill="url(#colorTotal)" name="Capacidad Biohackeada" />
-                                    <Line type="monotone" dataKey="natural" stroke="#334155" strokeWidth={2} dot={false} strokeDasharray="8 4" name="Base Natural" />
-                                    <ReferenceLine y={90} stroke="#4f46e5" strokeDasharray="10 5" label={{ value: 'ZONA DE GENIO', fill: '#818cf8', fontSize: 10, fontWeight: '900', position: 'insideTopRight' }} />
-                                </ComposedChart>
-                            </ResponsiveContainer>
+                        <div>
+                            <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">Operador</p>
+                            <p className="text-sm font-black text-white">{user.displayName}</p>
                         </div>
                     </div>
 
-                    {/* Panel Lateral de Controles */}
-                    <div className="lg:col-span-4 flex flex-col gap-4">
+                    {/* Date Selector Central - Cyber Style */}
+                    <div className="flex items-center gap-2 bg-black/40 p-1.5 rounded-full border border-white/5 shadow-inner">
+                        <button onClick={() => changeDate(-1)} className="p-2 hover:bg-white/10 rounded-full transition-all text-slate-400 hover:text-white">
+                            <ChevronLeft size={16} />
+                        </button>
+                        <div className="flex flex-col items-center min-w-[140px] px-2">
+                            <span className="text-[8px] font-black text-indigo-400 uppercase tracking-widest flex items-center gap-1.5 mb-0.5">
+                                <Calendar size={10} /> {formatDisplayDate(currentDate)}
+                            </span>
+                        </div>
+                        <button onClick={() => changeDate(1)} className="p-2 hover:bg-white/10 rounded-full transition-all text-slate-400 hover:text-white">
+                            <ChevronRight size={16} />
+                        </button>
+                    </div>
 
-                        {/* 1. UPGRADES PREMIUM */}
-                        <div className="bg-indigo-600/10 p-5 rounded-[2rem] border border-indigo-500/30 shadow-xl">
-                            <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <Star size={14} fill="currentColor" /> Premium Bio-Optimizers
-                            </h3>
-                            <div className="grid grid-cols-2 gap-2">
-                                <TimeableButton id="citicolina" label="Citicolina" icon={Target} colorTheme="indigo" />
-                                <TimeableButton id="rhodiola" label="Rhodiola" icon={Shield} colorTheme="indigo" />
-                                <div className="col-span-2">
-                                    <TimeableButton id="flowState" label="MODO FLOW 🔥" icon={Flame} colorTheme="orange" />
+                    {/* Botonera Derecha */}
+                    <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+                        <button
+                            onClick={() => setShowRecomendador(true)}
+                            className="flex items-center gap-2 px-5 py-2.5 bg-indigo-500 hover:bg-indigo-400 border border-indigo-400/50 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] rounded-full text-xs font-black text-white uppercase tracking-wider transition-all -translate-y-0.5 active:translate-y-0"
+                        >
+                            <Brain size={14} /> Auto-Optimize
+                        </button>
+                        <button onClick={onLogout} className="p-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-full transition-all flex items-center justify-center">
+                            <LogOut size={16} />
+                        </button>
+                    </div>
+                </div>
+
+                <div className={`max-w-7xl mx-auto transition-all duration-700 ${!isDataLoaded ? 'opacity-30 blur-sm pointer-events-none translate-y-4' : 'opacity-100 blur-0 translate-y-0'}`}>
+
+                    {/* Header Principal */}
+                    <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end mb-12 gap-8">
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 text-indigo-400 font-bold tracking-[0.25em] text-[9px] uppercase bg-indigo-950/40 px-4 py-1.5 rounded-full w-fit border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                                <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse" /> Biological Logic Engine v9.0
+                            </div>
+                            <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[1.1]">
+                                Rendimiento <br className="hidden md:block" />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 drop-shadow-[0_0_20px_rgba(6,182,212,0.5)]">
+                                    Cognitivo
+                                </span>
+                            </h1>
+                        </div>
+
+                        <div className="flex gap-4">
+                            <div className="bg-slate-900/40 backdrop-blur-xl p-6 rounded-[2rem] border border-white/5 text-center min-w-[140px] shadow-2xl relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <p className="text-[10px] text-slate-500 font-black uppercase mb-2 tracking-widest relative z-10">Piso Energético</p>
+                                <p className="text-4xl font-black text-white relative z-10">{(activeSupps.creatina.active && activeSupps.magnesio.active) ? '45%' : '35%'}</p>
+                            </div>
+                            <div className="bg-emerald-950/30 backdrop-blur-xl p-6 rounded-[2rem] border border-emerald-500/30 text-center min-w-[140px] shadow-[0_0_30px_rgba(16,185,129,0.1)] relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <p className="text-[10px] text-emerald-400 font-black uppercase mb-2 tracking-widest relative z-10">Peak CI Estimado</p>
+                                <p className="text-4xl font-black text-white relative z-10 text-shadow-sm">145</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 xl:gap-6 mb-12 flex-1 min-h-0">
+                        {/* Area Principal - Charts */}
+                        <div className="lg:col-span-12 xl:col-span-7 bg-slate-900/40 backdrop-blur-2xl p-4 md:p-6 lg:p-8 rounded-[2rem] border border-white/5 relative overflow-hidden shadow-2xl flex flex-col min-h-[350px]">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-[80px]" />
+                            <div className="flex-1 w-full relative z-10 min-h-0">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <ComposedChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                                        <defs>
+                                            <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.6} />
+                                                <stop offset="50%" stopColor="#8b5cf6" stopOpacity={0.2} />
+                                                <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                                            </linearGradient>
+                                            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                                <feGaussianBlur stdDeviation="8" result="blur" />
+                                                <feMerge>
+                                                    <feMergeNode in="blur" />
+                                                    <feMergeNode in="SourceGraphic" />
+                                                </feMerge>
+                                            </filter>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" opacity={0.4} />
+                                        <XAxis dataKey="time" interval={3} stroke="#64748b" fontSize={11} axisLine={false} tickLine={false} tickMargin={15} />
+                                        <YAxis domain={[0, 100]} hide />
+                                        <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#6366f1', strokeWidth: 1, strokeDasharray: '4 4', opacity: 0.5 }} />
+                                        <Area type="monotone" dataKey="optimized" stroke="#818cf8" strokeWidth={5} fillOpacity={1} fill="url(#colorTotal)" name="Capacidad Biohackeada" filter="url(#glow)" />
+                                        <Line type="monotone" dataKey="natural" stroke="#334155" strokeWidth={2} dot={false} strokeDasharray="6 6" name="Base Natural" />
+                                        <ReferenceLine y={90} stroke="#10b981" strokeDasharray="8 8" opacity={0.5} label={{ value: 'FLOW STATE ZONE', fill: '#10b981', fontSize: 10, fontWeight: '900', position: 'insideBottomRight', padding: 10 }} />
+                                    </ComposedChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        {/* Panel Lateral Modular en 2 Columnas Internas */}
+                        <div className="lg:col-span-12 xl:col-span-5 flex flex-col gap-4">
+
+                            {/* MÓDULO 1: FLOW & STIMULANTS */}
+                            <div className="bg-slate-900/40 p-4 md:p-5 rounded-[2rem] border border-white/5 backdrop-blur-xl shadow-xl">
+                                <h3 className="text-[10px] md:text-[11px] font-black text-white uppercase tracking-[0.2em] mb-4 flex items-center justify-between">
+                                    <span className="flex items-center gap-2"><Flame size={14} className="text-orange-500" /> Neuro-Stimulants</span>
+                                </h3>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <div className="col-span-2">
+                                        <TimeableButton id="flowState" label="MODO FLOW 🔥" icon={Target} colorTheme="orange" />
+                                    </div>
+                                    <TimeableButton id="cafe9am" label="CAFÉ AM" icon={Coffee} colorTheme="amber" />
+                                    <TimeableButton id="cafe11am" label="CAFÉ MEDIODÍA" icon={Coffee} colorTheme="amber" />
+                                    <TimeableButton id="cafe2pm" label="ESPRESSO PM" icon={Coffee} colorTheme="amber" />
+                                    <TimeableButton id="matcha" label="MATCHA FOCUS" icon={Coffee} colorTheme="emerald" />
+                                </div>
+                            </div>
+
+                            {/* MÓDULO 2: NOOTROPICS & COGNITIVA */}
+                            <div className="bg-slate-900/40 p-4 md:p-5 rounded-[2rem] border border-white/5 backdrop-blur-xl shadow-xl">
+                                <h3 className="text-[10px] md:text-[11px] font-black text-white uppercase tracking-[0.2em] mb-4 flex items-center justify-between">
+                                    <span className="flex items-center gap-2"><Brain size={14} className="text-indigo-500" /> Cognitive Stack</span>
+                                </h3>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <TimeableButton id="citicolina" label="Citicolina CDP" icon={Star} colorTheme="indigo" />
+                                    <TimeableButton id="rhodiola" label="Rhodiola Rosea" icon={Shield} colorTheme="indigo" />
+                                    <TimeableButton id="creatina" label="Creatina Mono" colorTheme="blue" />
+                                    <TimeableButton id="complejoB" label="Complejo B" colorTheme="blue" />
+                                </div>
+                            </div>
+
+                            {/* MÓDULO 3: NUTRICIÓN & RECUPERACIÓN */}
+                            <div className="bg-slate-900/40 p-4 md:p-5 rounded-[2rem] border border-white/5 backdrop-blur-xl shadow-xl">
+                                <h3 className="text-[10px] md:text-[11px] font-black text-white uppercase tracking-[0.2em] mb-4 flex items-center justify-between">
+                                    <span className="flex items-center gap-2"><Utensils size={14} className="text-emerald-500" /> Fuel & Recovery</span>
+                                </h3>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <TimeableButton id="huevosManana" label="HUEVOS AM" colorTheme="yellow" />
+                                    <TimeableButton id="huevosNoche" label="HUEVOS PM" colorTheme="yellow" />
+                                    <TimeableButton id="cocoaManana" label="COCOA AM" colorTheme="orange" />
+                                    <TimeableButton id="cocoaNoche" label="COCOA PM" colorTheme="orange" />
+                                    <TimeableButton id="curcuma" label="CÚRCUMA + PIM" colorTheme="amber" />
+                                    <TimeableButton id="infusion" label="INFUSIÓN" colorTheme="indigo" />
+                                    <TimeableButton id="magnesio" label="MAGNESIO BIS." colorTheme="white" />
+                                    <TimeableButton id="sulfato" label="SULFATO" colorTheme="white" />
                                 </div>
                             </div>
                         </div>
-
-                        {/* 2. NUTRICIÓN & DESPENSA */}
-                        <div className="bg-orange-600/10 p-5 rounded-[2rem] border border-orange-500/20 shadow-md">
-                            <h3 className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <Utensils size={14} /> Nutrición & Despensa
-                            </h3>
-                            <div className="grid grid-cols-2 gap-2">
-                                <TimeableButton id="huevosManana" label="HUEVOS AM" colorTheme="yellow" />
-                                <TimeableButton id="huevosNoche" label="HUEVOS PM" colorTheme="yellow" />
-                                <TimeableButton id="cocoaManana" label="COCOA AM" colorTheme="orange" />
-                                <TimeableButton id="cocoaNoche" label="COCOA PM" colorTheme="orange" />
-                                <TimeableButton id="curcuma" label="CÚRCUMA + PIM." colorTheme="amber" />
-                                <TimeableButton id="infusion" label="INFUSIÓN NOCHE" colorTheme="blue" />
-                            </div>
-                        </div>
-
-                        {/* 3. CICLO DE CAFEÍNA */}
-                        <div className="bg-amber-600/5 p-5 rounded-[2rem] border border-amber-500/10">
-                            <h3 className="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                <Coffee size={14} /> Neuro-Stimulants
-                            </h3>
-                            <div className="grid grid-cols-2 gap-2">
-                                <TimeableButton id="cafe9am" label="CAFÉ 1" colorTheme="amber" />
-                                <TimeableButton id="cafe11am" label="CAFÉ 2" colorTheme="amber" />
-                                <TimeableButton id="cafe2pm" label="ESPRESSO" colorTheme="amber" />
-                                <TimeableButton id="matcha" label="MATCHA" colorTheme="emerald" />
-                            </div>
-                        </div>
-
-                        {/* 4. INFRAESTRUCTURA */}
-                        <div className="bg-slate-900/50 p-5 rounded-[2rem] border border-white/5">
-                            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 text-center">Protocolo Base</h3>
-                            <div className="grid grid-cols-2 gap-2">
-                                <TimeableButton id="creatina" label="CREATINA" colorTheme="white" />
-                                <TimeableButton id="magnesio" label="MAGNESIO" colorTheme="white" />
-                                <TimeableButton id="sulfato" label="SULFATO" colorTheme="white" />
-                                <TimeableButton id="complejoB" label="COMPLEJO B" colorTheme="white" />
-                            </div>
-                        </div>
-
                     </div>
                 </div>
-
             </div>
         </div>
     );
