@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Brain, Shield, Sparkles } from 'lucide-react';
-// import { auth, provider, signInWithPopup } from '../firebase'; // Comentado hasta tener config
+import { auth, provider, signInWithPopup } from '../firebase';
 
 const Login = ({ onLogin }) => {
     const [loading, setLoading] = useState(false);
@@ -10,29 +10,17 @@ const Login = ({ onLogin }) => {
         setLoading(true);
         setError(null);
         try {
-            /*
-            // Esta será la conexión real a Firebase:
+            // Conexión real a Firebase:
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
-            onLogin({
-              uid: user.uid,
-              displayName: user.displayName,
-              email: user.email,
-              photoURL: user.photoURL
-            });
-            */
 
-            // Mock Login para demostración mientras se configura Firebase:
-            // Cuando conectes Firebase real, user.displayName traerá tu nombre de Google.
-            setTimeout(() => {
-                onLogin({
-                    uid: 'demo-user-123',
-                    displayName: 'Tu Nombre Real Aquí', // <- Cambiará automáticamente con Firebase
-                    email: 'demo@biohacking.com',
-                    photoURL: '/assets/avatar1.png'
-                });
-                setLoading(false);
-            }, 1500);
+            // Pasar los datos reales de la cuenta de Google al flujo de la aplicación
+            onLogin({
+                uid: user.uid,
+                displayName: user.displayName,
+                email: user.email,
+                photoURL: user.photoURL
+            });
 
         } catch (err) {
             console.error(err);
