@@ -17,44 +17,48 @@ const Recomendador = ({ currentSupps, onApply, onCancel }) => {
     const generateRecommendations = () => {
         // Partimos de todo apagado para armar el perfil limpio basado en salud
         let recs = {
-            creatina: false, magnesio: false, sulfato: false, complejoB: false,
-            cafe9am: false, cafe11am: false, cafe2pm: false, matcha: false,
-            huevosManana: false, huevosNoche: false, cocoaManana: false, cocoaNoche: false,
-            curcuma: false, infusion: false,
-            citicolina: false, rhodiola: false, flowState: false
+            creatina: { active: false, time: 7.0 }, magnesio: { active: false, time: 21.0 },
+            sulfato: { active: false, time: 14.0 }, complejoB: { active: false, time: 7.0 },
+            cafe9am: { active: false, time: 9.0 }, cafe11am: { active: false, time: 11.0 },
+            cafe2pm: { active: false, time: 14.0 }, matcha: { active: false, time: 18.0 },
+            huevosManana: { active: false, time: 8.0 }, huevosNoche: { active: false, time: 20.0 },
+            cocoaManana: { active: false, time: 8.0 }, cocoaNoche: { active: false, time: 20.0 },
+            curcuma: { active: false, time: 13.0 }, infusion: { active: false, time: 21.5 },
+            citicolina: { active: false, time: 8.5 }, rhodiola: { active: false, time: 8.5 },
+            flowState: { active: false, time: 9.0 }
         };
 
         // 1. Base Universal de Salud (Recomendado para todos)
-        recs.magnesio = true; // Excelente para el sueño y estrés
-        recs.complejoB = true; // Energía base celular
-        recs.huevosManana = true; // Colina natural
+        recs.magnesio.active = true; // Excelente para el sueño y estrés
+        recs.complejoB.active = true; // Energía base celular
+        recs.huevosManana.active = true; // Colina natural
 
         // 2. Personalización por Objetivo
         if (answers.goal === 'focus') {
-            recs.citicolina = answers.budget === 'premium';
-            recs.cocoaManana = true; // Vasodilatador leve
-            recs.flowState = true;
+            recs.citicolina.active = answers.budget === 'premium';
+            recs.cocoaManana.active = true; // Vasodilatador leve
+            recs.flowState.active = true;
         } else if (answers.goal === 'energy') {
-            recs.creatina = true;
-            recs.rhodiola = answers.budget === 'premium';
+            recs.creatina.active = true;
+            recs.rhodiola.active = answers.budget === 'premium';
         } else if (answers.goal === 'sleep') {
-            recs.infusion = true;
-            recs.huevosNoche = true; // Triptófano
+            recs.infusion.active = true;
+            recs.huevosNoche.active = true; // Triptófano
             recs.caffeineSensitivity = 'high'; // Forzar reducción de cafeína
         }
 
         // 3. Ajuste por Sensibilidad a estimulantes
         if (answers.caffeineSensitivity === 'high') {
-            recs.matcha = true; // L-Teanina ayuda a calmar
-            recs.cafe9am = true; // Solo uno en la mañana
+            recs.matcha.active = true; // L-Teanina ayuda a calmar
+            recs.cafe9am.active = true; // Solo uno en la mañana
         } else {
-            recs.cafe9am = true;
-            recs.cafe11am = true;
-            if (answers.goal === 'energy') recs.cafe2pm = true;
+            recs.cafe9am.active = true;
+            recs.cafe11am.active = true;
+            if (answers.goal === 'energy') recs.cafe2pm.active = true;
         }
 
         // 4. Adaptógenos Generales
-        recs.curcuma = true; // Antiinflamatorio natural siempre bueno
+        recs.curcuma.active = true; // Antiinflamatorio natural siempre bueno
 
         return recs;
     };

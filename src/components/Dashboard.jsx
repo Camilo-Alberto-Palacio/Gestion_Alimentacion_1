@@ -328,4 +328,41 @@ const Dashboard = ({ user, onLogout }) => {
                                 <TimeableButton id="huevosNoche" label="HUEVOS PM" colorTheme="yellow" />
                                 <TimeableButton id="cocoaManana" label="COCOA AM" colorTheme="orange" />
                                 <TimeableButton id="cocoaNoche" label="COCOA PM" colorTheme="orange" />
-                                <TimeableButton id="curcuma" label="CÚRCUMA + PIM." 
+                                <TimeableButton id="curcuma" label="CÚRCUMA + PIM." colorTheme="amber" />
+                                <TimeableButton id="infusion" label="INFUSIÓN NOCHE" colorTheme="blue" />
+                            </div>
+                        </div>
+
+                        {/* 3. CICLO DE CAFEÍNA */}
+                        <div className="bg-amber-600/5 p-5 rounded-[2rem] border border-amber-500/10">
+                            <h3 className="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <Coffee size={14} /> Neuro-Stimulants
+                            </h3>
+                            <div className="grid grid-cols-2 gap-2">
+                                <TimeableButton id="cafe9am" label="CAFÉ 1" colorTheme="amber" />
+                                <TimeableButton id="cafe11am" label="CAFÉ 2" colorTheme="amber" />
+                                <TimeableButton id="cafe2pm" label="ESPRESSO" colorTheme="amber" />
+                                <TimeableButton id="matcha" label="MATCHA" colorTheme="emerald" />
+                            </div>
+                        </div>
+
+                        {/* 4. INFRAESTRUCTURA */}
+                        <div className="bg-slate-900/50 p-5 rounded-[2rem] border border-white/5">
+                            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 text-center">Protocolo Base</h3>
+                            <div className="grid grid-cols-2 gap-2">
+                                <TimeableButton id="creatina" label="CREATINA" colorTheme="white" />
+                                <TimeableButton id="magnesio" label="MAGNESIO" colorTheme="white" />
+                                <TimeableButton id="sulfato" label="SULFATO" colorTheme="white" />
+                                <TimeableButton id="complejoB" label="COMPLEJO B" colorTheme="white" />
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    );
+};
+
+export default Dashboard;
