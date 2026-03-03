@@ -61,14 +61,16 @@ const Dashboard = ({ user, onLogout }) => {
 
                 if (isMounted) {
                     if (docSnap.exists() && docSnap.data().supps) {
-                        // Mezcla profunda para evitar que datos viejos sin nuevos suplementos rompan la app
+                        // Merge limpio: Defaults como base + los datos recuperados encima
                         const loadedSupps = docSnap.data().supps;
+
                         const mergedSupps = { ...DEFAULT_SUPPS };
-                        for (const key in loadedSupps) {
-                            if (mergedSupps[key]) {
-                                mergedSupps[key] = { ...mergedSupps[key], ...loadedSupps[key] };
+                        Object.keys(DEFAULT_SUPPS).forEach(key => {
+                            if (loadedSupps[key]) {
+                                mergedSupps[key] = { ...DEFAULT_SUPPS[key], ...loadedSupps[key] };
                             }
-                        }
+                        });
+
                         setActiveSupps(mergedSupps);
                     } else {
                         setActiveSupps(DEFAULT_SUPPS);
@@ -89,40 +91,40 @@ const Dashboard = ({ user, onLogout }) => {
     }, [currentDate, user.uid]);
 
     // Función Helper para Guardado Explícito y Directo a Firebase
-    const saveToFirebase = async (newSupps) => {
+    const saveToFirebase = async (payload) => {
         if (!user || !user.uid) return;
         try {
+            console.log("Intentando guardar en Firebase:", payload);
             const docRef = doc(db, 'users', user.uid, 'history', currentDate);
-            // Evitamos {merge: true} para forzar que el documento siempre tenga la estructura completa exacta
-            await setDoc(docRef, { supps: newSupps });
+            // setDoc overwrite asegura que no queden residuos extraños antiguos en BD
+            await setDoc(docRef, { supps: payload });
+            console.log("¡Guardado exitoso en Firebase!");
         } catch (error) {
             console.error("Error guardando manual en Firebase:", error);
+            alert("Error de Firebase: " + error.message + " (Suele ser permisos de base de datos incorrectos)");
         }
     };
 
     const toggleSupp = (id) => {
-        setActiveSupps(prev => {
-            const newSupps = {
-                ...prev,
-                [id]: { ...prev[id], active: !prev[id].active }
-            };
-            saveToFirebase(newSupps); // Disparamos el guardado con el estado computado en el momento exacto
-            return newSupps;
-        });
+        const newActiveState = !activeSupps[id].active;
+        const newSupps = {
+            ...activeSupps,
+            [id]: { ...activeSupps[id], active: newActiveState }
+        };
+        setActiveSupps(newSupps);
+        saveToFirebase(newSupps);
     };
 
     const updateSuppTime = (id, timeString) => {
         const [hours, mins] = timeString.split(':').map(Number);
         const floatTime = hours + (mins / 60);
 
-        setActiveSupps(prev => {
-            const newSupps = {
-                ...prev,
-                [id]: { ...prev[id], time: floatTime }
-            };
-            saveToFirebase(newSupps);
-            return newSupps;
-        });
+        const newSupps = {
+            ...activeSupps,
+            [id]: { ...activeSupps[id], time: floatTime }
+        };
+        setActiveSupps(newSupps);
+        saveToFirebase(newSupps);
     };
 
     const applyRecommendations = (newSupps) => {
