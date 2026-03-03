@@ -65,9 +65,7 @@ const Dashboard = ({ user, onLogout }) => {
                     } else {
                         setActiveSupps(DEFAULT_SUPPS);
                     }
-                    // Utilizamos un pequeño timeout para asegurar que el re-render de activeSupps
-                    // aplique antes de habilitar el auto-guardado
-                    setTimeout(() => setIsDataLoaded(true), 100);
+                    setIsDataLoaded(true);
                 }
             } catch (error) {
                 console.error("Error cargando historial de Firebase:", error);
@@ -82,48 +80,42 @@ const Dashboard = ({ user, onLogout }) => {
         return () => { isMounted = false; };
     }, [currentDate, user.uid]);
 
-    // 4. Guardado de Datos en Firebase (Auto-Save)
-    // Se ejecuta cada vez que activeSupps cambia, PERO solo si isDataLoaded es true.
-    useEffect(() => {
-        const saveDayData = async () => {
-            if (!isDataLoaded) return; // No guardamos re-renders causados por la carga inicial
-
-            try {
-                const docRef = doc(db, 'users', user.uid, 'history', currentDate);
-                await setDoc(docRef, { supps: activeSupps }, { merge: true });
-            } catch (error) {
-                console.error("Error guardando en Firebase:", error);
-            }
-        };
-
-        // Ponemos un pequeño debounce para evitar floods a Firebase si le da muchos clicks rápidos
-        const timeoutId = setTimeout(() => {
-            saveDayData();
-        }, 500);
-
-        return () => clearTimeout(timeoutId);
-    }, [activeSupps, isDataLoaded]); // Eliminamos currentDate y user.uid como dependencias fuertes para evitar guardados accidentales al cambiar de fecha
-
+    // Función Helper para Guardado Explícito y Directo a Firebase
+    const saveToFirebase = async (newSupps) => {
+        if (!user || !user.uid) return;
+        try {
+            const docRef = doc(db, 'users', user.uid, 'history', currentDate);
+            await setDoc(docRef, { supps: newSupps }, { merge: true });
+        } catch (error) {
+            console.error("Error guardando manual en Firebase:", error);
+        }
+    };
 
     const toggleSupp = (id) => {
-        setActiveSupps(prev => ({
-            ...prev,
-            [id]: { ...prev[id], active: !prev[id].active }
-        }));
+        const newSupps = {
+            ...activeSupps,
+            [id]: { ...activeSupps[id], active: !activeSupps[id].active }
+        };
+        setActiveSupps(newSupps);
+        saveToFirebase(newSupps);
     };
 
     const updateSuppTime = (id, timeString) => {
         const [hours, mins] = timeString.split(':').map(Number);
         const floatTime = hours + (mins / 60);
-        setActiveSupps(prev => ({
-            ...prev,
-            [id]: { ...prev[id], time: floatTime }
-        }));
+
+        const newSupps = {
+            ...activeSupps,
+            [id]: { ...activeSupps[id], time: floatTime }
+        };
+        setActiveSupps(newSupps);
+        saveToFirebase(newSupps);
     };
 
     const applyRecommendations = (newSupps) => {
         setActiveSupps(newSupps);
         setShowRecomendador(false);
+        saveToFirebase(newSupps);
     };
 
     const formatTimeForInput = (floatTime) => {
