@@ -61,7 +61,15 @@ const Dashboard = ({ user, onLogout }) => {
 
                 if (isMounted) {
                     if (docSnap.exists() && docSnap.data().supps) {
-                        setActiveSupps(docSnap.data().supps);
+                        // Mezcla profunda para evitar que datos viejos sin nuevos suplementos rompan la app
+                        const loadedSupps = docSnap.data().supps;
+                        const mergedSupps = { ...DEFAULT_SUPPS };
+                        for (const key in loadedSupps) {
+                            if (mergedSupps[key]) {
+                                mergedSupps[key] = { ...mergedSupps[key], ...loadedSupps[key] };
+                            }
+                        }
+                        setActiveSupps(mergedSupps);
                     } else {
                         setActiveSupps(DEFAULT_SUPPS);
                     }
@@ -85,31 +93,36 @@ const Dashboard = ({ user, onLogout }) => {
         if (!user || !user.uid) return;
         try {
             const docRef = doc(db, 'users', user.uid, 'history', currentDate);
-            await setDoc(docRef, { supps: newSupps }, { merge: true });
+            // Evitamos {merge: true} para forzar que el documento siempre tenga la estructura completa exacta
+            await setDoc(docRef, { supps: newSupps });
         } catch (error) {
             console.error("Error guardando manual en Firebase:", error);
         }
     };
 
     const toggleSupp = (id) => {
-        const newSupps = {
-            ...activeSupps,
-            [id]: { ...activeSupps[id], active: !activeSupps[id].active }
-        };
-        setActiveSupps(newSupps);
-        saveToFirebase(newSupps);
+        setActiveSupps(prev => {
+            const newSupps = {
+                ...prev,
+                [id]: { ...prev[id], active: !prev[id].active }
+            };
+            saveToFirebase(newSupps); // Disparamos el guardado con el estado computado en el momento exacto
+            return newSupps;
+        });
     };
 
     const updateSuppTime = (id, timeString) => {
         const [hours, mins] = timeString.split(':').map(Number);
         const floatTime = hours + (mins / 60);
 
-        const newSupps = {
-            ...activeSupps,
-            [id]: { ...activeSupps[id], time: floatTime }
-        };
-        setActiveSupps(newSupps);
-        saveToFirebase(newSupps);
+        setActiveSupps(prev => {
+            const newSupps = {
+                ...prev,
+                [id]: { ...prev[id], time: floatTime }
+            };
+            saveToFirebase(newSupps);
+            return newSupps;
+        });
     };
 
     const applyRecommendations = (newSupps) => {
